@@ -38,7 +38,7 @@ function jsonToCsv(data, filename) {
     fs.writeFile(filename, result, (err) => {});
 }
 
-function CsvToJson(file) {
+function csvToJson(file) {
     let fileString = fs.readFileSync(file).toString();
     const rows = fileString.replace(/\r/g, "").trim().split("\n");
     
