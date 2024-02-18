@@ -12,7 +12,7 @@ const data = {
     ]
 }
 
-function jsonToCsv(data, filename) {
+function jsonToCsv(data, filename, seperator) {
     let keys = Object.keys(data);
 
     let length = 0;
@@ -24,13 +24,13 @@ function jsonToCsv(data, filename) {
     }
 
     let result = [];
-    result.push(keys.join(";") + "\n");
+    result.push(keys.join(seperator) + "\n");
     for (i = 0; i < length; i++) {
         let row = [];
         for (let key in data) {
             row.push(data[key][i]?.toString() || "");
         }
-        result.push(row.join(";") + "\n");
+        result.push(row.join(seperator) + "\n");
     }
     
     result = result.join("");
@@ -38,22 +38,26 @@ function jsonToCsv(data, filename) {
     fs.writeFile(filename, result, (err) => {});
 }
 
-function csvToJson(file) {
+function csvToJson(file, seperator) {
     let fileString = fs.readFileSync(file).toString();
     const rows = fileString.replace(/\r/g, "").trim().split("\n");
     
     let result = {};
-    const keys = rows[0].split(";");
+    const keys = rows[0].split(seperator);
     for (let key of keys) {
         result[key] = [];
     }
 
-    let cells = rows.map(row => row.split(";"));
+    let cells = rows.map(row => row.split(seperator));
 
     i = 0;
     for (let key of keys) {
         for (j = 1; j < rows.length; j++) {
             let currentCell = cells[j][i];
+
+            if (currentCell === '') {
+                continue;
+            }
 
             if (!isNaN(parseInt(currentCell))) {
                 result[key].push(parseInt(currentCell));
@@ -78,5 +82,5 @@ function csvToJson(file) {
     return result;
 }
 
-jsonToCsv(data, "newfile.csv");
-console.log(CsvToJson("file.csv"));
+jsonToCsv(data, "newfile.csv", ";");
+console.log(csvToJson("file.csv", ";"));
